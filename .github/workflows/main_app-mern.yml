@@ -14,14 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Set up Node.js version
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - run: npm ci
-      - run: npm test
+
       - name: npm install, build, and test
         run: |
           npm install
@@ -53,5 +52,5 @@ jobs:
         with:
           app-name: 'app-mern'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EC89B6B3F7D54FFCA9E7D47C352DC03C }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DE93B7F99FFA48FCBE6FD553983D54DB }}
           package: .
