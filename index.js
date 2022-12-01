@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const routeTasks = require('./src/routes/tasks');
 
-
+app.set('port', process.env.PORT || 5000);
+console.log("+++++++++++++++" + app.get('port'));
 
 app.get('/this-test',function(req, res, ){
  console.log('test'); 
@@ -65,16 +66,15 @@ app.use('/api/fr/services', services_fr);
 
 app.use(express.static('./client/build'));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "client", "build",     
-  "index.html"));
+app.get("*", (req, res) => { //our GET route needs to point to the index.html in our build
+  res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
 
 
 
+module.exports = app;
 
 
-
-app.set('port', process.env.PORT || 5000);
-
-console.log(`listening on ${port}`);
+app.listen(app.get('port'), function () {
+  console.log('Express server listening on port ' + app.get('port'));
+});
