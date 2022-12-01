@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
+var logger = require('morgan');
 const routeTasks = require('./src/routes/tasks');
 
 app.set('port', process.env.PORT || 5000);
@@ -62,7 +63,7 @@ app.use('/api/fr/applications', applications_fr);
 app.use('/api/fr/pages', pages_fr);
 app.use('/api/fr/services', services_fr);
 
-
+app.use(logger('dev'));
 
 app.use(express.static('./client/build'));
 
