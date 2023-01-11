@@ -11,10 +11,12 @@ const {OAuth2Client} = require('google-auth-library');
 const User = require('../../models/User');
 const auth = require('../../middleware/auth');
 const { EmailClient } = require("@azure/communication-email");
-const { SmsClient } = require('@azure/communication-sms');
 const connectionString = "<endpoint=https://communcation-mern.communication.azure.com/;accesskey=mGvpTHfzWlAgYWj7syV5QOISU33Agnmy8iNlqCXqM+WmxO4I4fUXVj3WgDdtYKkKRGhVtlKiI6oGN/2ccYNw4g==>";
-const smsconnectionString = "endpoint=https://communcation-mern.communication.azure.com/;accesskey=mGvpTHfzWlAgYWj7syV5QOISU33Agnmy8iNlqCXqM+WmxO4I4fUXVj3WgDdtYKkKRGhVtlKiI6oGN/2ccYNw4g==";
 const client = new EmailClient(connectionString);
+const { SmsClient } = require('@azure/communication-sms');
+
+const smsconnectionString = "endpoint=https://communcation-mern.communication.azure.com/;accesskey=mGvpTHfzWlAgYWj7syV5QOISU33Agnmy8iNlqCXqM+WmxO4I4fUXVj3WgDdtYKkKRGhVtlKiI6oGN/2ccYNw4g==";
+
 // Instantiate the SMS client.
 const smsClient = new SmsClient(smsconnectionString);
 const googleClient = new OAuth2Client("102143246081-iqodvc2om9ecjrcgdecfindnmpicu06i.apps.googleusercontent.com");
@@ -205,7 +207,7 @@ router.post('/',  async(req, res) => {
       .catch(err => res.status(400).json({ error: 'Unable to add this user' }));
       const sender = "<mern@24d9462a-79f6-45a9-b5d2-2455488a4c00.azurecomm.net>";
       const emailContent = {
-        subject: "Registration Successful",
+        subject: "User Registration Successful",
         plainText: "You are Successfully Registered with us.",
         html: "<html><head><title>Registration Successful</title></head><body><h2>Your Registration is Successful</h2><p>Your Registration is Successful. Please wait till admin approves your registration</p></body></html>",
       };

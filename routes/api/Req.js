@@ -4,6 +4,9 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const config = require('config');
 const jwt = require('jsonwebtoken');
+const { EmailClient } = require("@azure/communication-email");
+const connectionString = "<endpoint=https://communcation-mern.communication.azure.com/;accesskey=mGvpTHfzWlAgYWj7syV5QOISU33Agnmy8iNlqCXqM+WmxO4I4fUXVj3WgDdtYKkKRGhVtlKiI6oGN/2ccYNw4g==>";
+const client = new EmailClient(connectionString);
 const mongoose = require('mongoose');
 const translate = require('@iamtraction/google-translate');
 // Load Book model
@@ -18,6 +21,7 @@ const auth = require('../../middleware/auth');
 const Req = mongoose.model("Request");
 const Appl = mongoose.model("Application");
 const Reqq = require('../../models/Request');
+const User = require('../../models/User');
 router.get('/', (req, res) => {
   //console.log('test');
   Reqq.find()
@@ -85,8 +89,12 @@ router.post('/place', function(req,res){
         user_id: req.body.user_id
     }).save(function(err,doc){
     if(err)res.json(err);
-    else res.json({ msg: 'Request Placed Successfully' });
+    else 
+    {
       
+    res.json({ msg: 'Request Placed Successfully' });
+    
+  } 
       });
     });
 
@@ -96,7 +104,7 @@ router.post('/apply', function(req,res){
     fees: req.body.fees,
     request_applied: req.body.request_applied,
     professional_id: req.body.professional_id
-}).save(function(err,doc){
+}).save(async(err,doc)=>{
 if(err)res.json(err);
 else 
 {
@@ -104,10 +112,71 @@ else
   var newvalues = { $set: {status: 2 } }; 
   Reqq.updateOne(myquery, newvalues, function(err1, res1){
   if(err1) throw err1;
-  else res.json({ msg: 'Request Applied Successfully' });
-  
+  else 
+  {
+    
+  res.json({ msg: 'Request Applied Successfully' });
+    
+}
   });
 
+//var q = { _id: mongoose.Types.ObjectId(req.body.request_applied) }; 
+
+var result = await Reqq.findOne({ _id: req.body.request_applied });
+var user_details = await User.findOne({_id:result.user_id});
+//console.log(user_details.email);
+const sender = "<mern@24d9462a-79f6-45a9-b5d2-2455488a4c00.azurecomm.net>";
+      const emailContent = {
+        subject: "Request Application",
+        plainText: "Someone Applied for the Request",
+        html: "<html><head><title>Request Application</title></head><body><h2>Someone Applied for the Request you created</h2></body></html>",
+      };
+      const toRecipients = {
+        to: [
+          { email: "<"+user_details.email+">", displayName: "<Naveen Uniyal>" },
+        ],
+      };
+      try {
+        const emailMessage = {
+          sender: sender,
+          content: emailContent,
+          recipients: toRecipients,
+        };
+    
+        const sendResult = await client.send(emailMessage);
+    
+        if (sendResult && sendResult.messageId) {
+          // check mail status, wait for 5 seconds, check for 60 seconds.
+          const messageId = sendResult.messageId;
+          if (messageId === null) {
+            console.log("Message Id not found.");
+            return;
+          }
+    
+          console.log("Send email success, MessageId :", messageId);
+    
+          let counter = 0;
+          const statusInterval = setInterval(async function () {
+            counter++;
+            try {
+              const response = await client.getSendStatus(messageId);
+              if (response) {
+                console.log(`Email status for {${messageId}} : [${response.status}]`);
+                if (response.status.toLowerCase() !== "queued" || counter > 12) {
+                  clearInterval(statusInterval);
+                }
+              }
+            } catch (e) {
+              console.log("Error in checking send mail status: ",e);
+            }
+          }, 5000);
+        } else {
+          console.error("Something went wrong when trying to send this email: ", sendResult);
+        }
+      } catch (e) {
+        console.log("################### Exception occoured while sending email #####################", e);
+      }
+  
 }
 });
 });

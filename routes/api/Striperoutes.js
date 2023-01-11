@@ -32,7 +32,9 @@ stripe.charges.create({
    
  Req.updateOne(query, newvalues, function(err, res) {
    if (err) throw err;
-   console.log("1 document updated");
+   console.log("Payment Successful");
+   console.log(token.email);
+
    
 });
  res.status(200).json(result);   
