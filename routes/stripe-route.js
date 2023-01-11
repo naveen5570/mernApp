@@ -2,7 +2,7 @@ const express = require("express");
 const stripe = require("stripe")("sk_test_51KqNoBEsO5lD4LSjbxwyaHilhLYJWqex3nkAu35puvfYNEZbMdlcReu4qmsAri5GgpDN8B2kuraLLcuIZy6vWSKz0019XGf6of");
 const {v4: uuidv4} = require('uuid');
 const Req = require('../models/Request');
-const User = require('../models/User');
+const Professional = require('../models/Professional');
 const router = express.Router();
 const { EmailClient } = require("@azure/communication-email");
 const connectionString = "<endpoint=https://communcation-mern.communication.azure.com/;accesskey=mGvpTHfzWlAgYWj7syV5QOISU33Agnmy8iNlqCXqM+WmxO4I4fUXVj3WgDdtYKkKRGhVtlKiI6oGN/2ccYNw4g==>";
@@ -35,18 +35,17 @@ stripe.charges.create({
  Req.updateOne(query, newvalues, async(err, res)=> {
    if (err) throw err;
    console.log("Payment Successful");
-   var reqqq = await Req.findOne({_id: req.body.req_id});
-   var user = await User.findOne({_id:reqqq.user_id});
-   console.log(user.email);
+   var professional = await Professional.findOne({_id:req.body.p_id});
+   console.log(professional.email);
    const sender = "<mern@24d9462a-79f6-45a9-b5d2-2455488a4c00.azurecomm.net>";
       const emailContent = {
-        subject: "Professional Registration Successful",
-        plainText: "You are Successfully Registered with us.",
-        html: "<html><head><title>Registration Successful</title></head><body><h2>Your Registration is Successful</h2><p>Your Registration is Successful. Please wait till admin approves your registration</p></body></html>",
+        subject: "Application Accepted",
+        plainText: "Application Accepted",
+        html: "<html><head><title>Application Accepted</title></head><body><h2>Your Application is accepted and you are hired.</h2></body></html>",
       };
       const toRecipients = {
         to: [
-          { email: "<"+req.body.email+">", displayName: "<Naveen Uniyal>" },
+          { email: "<"+professional.email+">", displayName: "<Naveen Uniyal>" },
         ],
       };
       try {

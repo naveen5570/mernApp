@@ -63,6 +63,9 @@ class ProfessionalApplyRequestForm extends Component {
             amount: totalAmount,
             req_id: applications.map((application) => (
               application.request_applied
+            )),
+            p_id: applications.map((application) => (
+              application.professional_id
             ))
           }).then(res => {
             //console.log("Print-showapplicationDetails-API-response: " + JSON.stringify(res.data));
