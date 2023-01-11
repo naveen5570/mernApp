@@ -316,6 +316,7 @@ h3.title { font-size:40px; line-height: 54px;}
 .dashboard .col-md-3 {padding-left:5px; padding-right:5px;}
 .arrow {position: relative;}
 .arrow img{position: absolute; }
+.google_login {background-color:transparent !important; box-shadow:none !important; background-image: url(./img/g+.png); background-size: contain; background-position: center 3px; background-repeat: no-repeat}
 
 
 
